@@ -5,55 +5,9 @@
 #include <stdlib.h> 
 #include <fmt/core.h>
 #include <fmt/printf.h>
+#include "nbody_common.h"
 
-#define SOFTENING 1e-9f
-
-/*
- * Each body contains `pos` and `vel` variables,
- * whereby each contains x, y, and z components.
- */
-
-typedef struct { float3 pos, vel; } Body;
-
-/*
- * Initialize `pos` with vector (n, n, n), where n is the index of the body
- * and `vel` with vector (1,1,1).
- */
-
-void initBodies(Body *data, int n) {
-  for (int i = 0; i < n; i++) {
-    data[i].pos.x = (float)i;
-    data[i].pos.y = (float)i;
-    data[i].pos.z = (float)i;
-    data[i].vel.x = 1.0f;
-    data[i].vel.y = 1.0f;
-    data[i].vel.z = 1.0f;
-  }
-}
-
-/*
- * This function calculates the gravitational impact of all bodies in the system
- * on all others, but does not update their positions.
- */
-
-void bodyForce(Body *p, float dt, int n) {
-  for (int i = 0; i < n; ++i) {
-    float Fx = 0.0f; float Fy = 0.0f; float Fz = 0.0f;
-
-    for (int j = 0; j < n; j++) {
-      float dx = p[j].pos.x - p[i].pos.x;
-      float dy = p[j].pos.y - p[i].pos.y;
-      float dz = p[j].pos.z - p[i].pos.z;
-      float distSqr = dx*dx + dy*dy + dz*dz + SOFTENING;
-      float invDist = rsqrtf(distSqr);
-      float invDist3 = invDist * invDist * invDist;
-
-      Fx += dx * invDist3; Fy += dy * invDist3; Fz += dz * invDist3;
-    }
-
-    p[i].vel.x += dt*Fx; p[i].vel.y += dt*Fy; p[i].vel.z += dt*Fz;
-  }
-}
+using Body = nbody_common::Body;
 
 int main(const int argc, const char** argv) {
 
@@ -77,7 +31,7 @@ int main(const int argc, const char** argv) {
 
   Body *p = (Body*)malloc(bytes);
 
-  initBodies(p, nBodies); // Init pos / vel data
+  nbody_common::initBodies(p, nBodies); // Init pos / vel data
   auto pos0 = p[0].pos;
   auto vel0 = p[0].vel;
   fmt::print("{}-th body\n",0);
@@ -92,7 +46,7 @@ int main(const int argc, const char** argv) {
   auto st0 = std::chrono::high_resolution_clock::now();
   for (int iter = 0; iter < nIters; iter++) {
 
-    bodyForce(p, dt, nBodies); // compute interbody forces
+    nbody_common::bodyForce(p, dt, nBodies); // compute interbody forces
 
     for (int i = 0 ; i < nBodies; i++) { // integrate position
       p[i].pos.x += p[i].vel.x*dt;
