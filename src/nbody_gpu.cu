@@ -26,3 +26,15 @@ void bodyForce_v1(Body *p, float dt, int n) {
     p[i].vel.z += dt*Fz;
   }
 }
+
+__global__
+void integrateBody(Body *p, float dt, int n){
+  int i_id = blockIdx.x * blockDim.x + threadIdx.x;
+  int stride_i = gridDim.x * blockDim.x;
+  
+  for (int i = i_id; i < n; i+=stride_i) {
+    p[i].pos.x += p[i].vel.x*dt;
+    p[i].pos.y += p[i].vel.y*dt;
+    p[i].pos.z += p[i].vel.z*dt;
+  }
+}
