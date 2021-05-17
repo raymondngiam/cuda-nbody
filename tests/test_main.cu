@@ -34,15 +34,7 @@ bool AlmostEqual(Body *p, Body *q, int nBodies, float epsilon){
   return almostEqual;
 }
 
-TEST(Test01_RefactorBodyForce,TwoBodiesTest){
-  const float dt = 0.01f; // time step
-  const int nIters = 10;  // simulation iterations
-  const int nBodies = 2;
-
-  int bytes = nBodies * sizeof(Body);
-
-  Body *baseline = (Body*)malloc(bytes);
-
+void GetBaseline(Body *baseline, int nBodies){
   std::ifstream f(fmt::format("../data/data_{:04d}.txt",nBodies));
   std::string line;
   boost::regex pat( "(.*),(.*),(.*),(.*),(.*),(.*)" );
@@ -61,6 +53,17 @@ TEST(Test01_RefactorBodyForce,TwoBodiesTest){
       index += 1;
     }
   }  
+}
+
+TEST(Test01_RefactorBodyForce,TwoBodiesTest){
+  const float dt = 0.01f; // time step
+  const int nIters = 10;  // simulation iterations
+  const int nBodies = 2;
+
+  int bytes = nBodies * sizeof(Body);
+
+  Body *baseline = (Body*)malloc(bytes);
+  GetBaseline(baseline,nBodies);  
 
   Body *buf = (Body*)malloc(bytes);
 
