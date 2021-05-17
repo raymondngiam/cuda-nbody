@@ -6,6 +6,7 @@
 
 - CMake > 3.18
 - CUDA > 11.1
+- Boost > 1.71
 
 ### Pull third party submodules
 
