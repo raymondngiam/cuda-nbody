@@ -8,6 +8,11 @@
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
 
+namespace{
+  const float dt = 0.01f; // time step
+  const int nIters = 10;  // simulation iterations
+} // namespace
+
 void PrintNBodies(Body *p, int nBodies){
   for (int i = 0 ; i < nBodies; i++) {
     fmt::print("{:.6f},{:.6f},{:.6f},{:.6f},{:.6f},{:.6f}\n", 
@@ -55,11 +60,7 @@ void GetBaseline(Body *baseline, int nBodies){
   }  
 }
 
-TEST(Test01_RefactorBodyForce,TwoBodiesTest){
-  const float dt = 0.01f; // time step
-  const int nIters = 10;  // simulation iterations
-  const int nBodies = 2;
-
+void NBody_GPU_V1(int nBodies,bool verbose){
   int bytes = nBodies * sizeof(Body);
 
   Body *baseline = (Body*)malloc(bytes);
@@ -92,13 +93,20 @@ TEST(Test01_RefactorBodyForce,TwoBodiesTest){
       p[i].pos.z += p[i].vel.z*dt;
     }
   }
-  fmt::print("Output:\n");
-  PrintNBodies(p,nBodies);
-  fmt::print("\n");
-  fmt::print("Baseline:\n");
-  PrintNBodies(baseline,nBodies);
+  if (verbose){
+    fmt::print("Output:\n");
+    PrintNBodies(p,nBodies);
+    fmt::print("\n");
+    fmt::print("Baseline:\n");
+    PrintNBodies(baseline,nBodies);
+  }
   EXPECT_TRUE(AlmostEqual(p,baseline,nBodies,1e-4));
 
   cudaFree(&p);
   free(buf);
+}
+
+TEST(Test01_RefactorBodyForce,TwoBodiesTest){
+  const int nBodies = 2;
+  NBody_GPU_V1(nBodies, true);
 }
