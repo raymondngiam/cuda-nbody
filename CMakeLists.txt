@@ -10,6 +10,9 @@ include(CTest)
 add_subdirectory(thirdparty/fmt
                  ${PROJECT_BINARY_DIR}/fmt)
 
+find_package (Boost 1.71 COMPONENTS regex REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
