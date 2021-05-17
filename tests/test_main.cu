@@ -119,3 +119,18 @@ TEST(Test01_RefactorBodyForce,TwoBodiesTest){
   const int nBodies = 2;
   NBody_GPU_V1(nBodies, true);
 }
+
+TEST(Test01_RefactorBodyForce,EightBodiesTest){
+  const int nBodies = 8;
+  NBody_GPU_V1(nBodies, true);
+}
+
+TEST(Test01_RefactorBodyForce,_32BodiesTest){
+  const int nBodies = 32;
+  NBody_GPU_V1(nBodies, false);
+}
+
+TEST(Test01_RefactorBodyForce,_4096BodiesTest){
+  const int nBodies = 4096;
+  NBody_GPU_V1(nBodies, false);
+}
