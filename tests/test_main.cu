@@ -2,6 +2,7 @@
 #include "nbody_common.h"
 #include "nbody_gpu.h"
 #include <math.h>
+#include <chrono>
 #include <string>
 #include <fstream>
 #include <fmt/core.h>
@@ -78,6 +79,7 @@ void NBody_GPU_V1(int nBodies,bool verbose){
   if (errSync!=cudaSuccess){printf("Malloc error: %s\n",cudaGetErrorString(errSync));}
   memcpy(p, buf, bytes);
 
+  auto st0 = std::chrono::high_resolution_clock::now();
   for (int iter = 0; iter < nIters; iter++) {
     dim3 num_of_blocks(32,1,1);
     dim3 threads_per_block(256,1,1);
@@ -93,6 +95,13 @@ void NBody_GPU_V1(int nBodies,bool verbose){
       p[i].pos.z += p[i].vel.z*dt;
     }
   }
+  auto st1 = std::chrono::high_resolution_clock::now();
+  auto elapsed_ms = 1e-6 * (st1-st0).count()/ nIters ;
+  fmt::print("{:d} Bodies: average execution time = {:.6f} milliseconds\n",nBodies,elapsed_ms);
+
+  float billionsOfOpsPerSecond = 1e-9 * nBodies * nBodies / (elapsed_ms/1000.0);
+  fmt::print("{:d} Bodies: average {:0.6f} Billion Interactions / second\n",nBodies,billionsOfOpsPerSecond);
+
   if (verbose){
     fmt::print("Output:\n");
     PrintNBodies(p,nBodies);
