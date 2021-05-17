@@ -1,10 +1,13 @@
+add_library(test_utils test_utils.cu)
+target_link_libraries(test_utils nbody_common fmt ${Boost_LIBRARIES})
+
 set(TEST_BINARY ${PROJECT_NAME}_test)
-add_executable(${TEST_BINARY} test_main.cu)  
+add_executable(${TEST_BINARY} test_main.cu )  
 target_link_libraries(${TEST_BINARY} 
     nbody_common
     nbody_gpu
-    fmt
-    ${Boost_LIBRARIES}
+    test_utils
+    fmt    
     gtest 
     gtest_main)
 
