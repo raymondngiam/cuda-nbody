@@ -55,7 +55,11 @@ int main(const int argc, const char** argv) {
     }
   }
   auto st1 = std::chrono::high_resolution_clock::now();
-  fmt::print("Average execution time = {:.6f} milliseconds\n",1e-6 * (st1-st0).count() / nIters);
+  auto elapsed_ms = 1e-6 * (st1-st0).count()/ nIters ;
+  fmt::print("{:d} Bodies: average execution time = {:.6f} milliseconds\n",nBodies,elapsed_ms);
+
+  float billionsOfOpsPerSecond = 1e-9 * nBodies * nBodies / (elapsed_ms/1000.0);
+  fmt::print("{:d} Bodies: average {:0.3f} Billion Interactions / second\n",nBodies,billionsOfOpsPerSecond);
 
   std::ofstream f(fmt::format("../data/data_{:04d}.txt",nBodies));
   fmt::fprintf(f,"x,y,z,vx,vy,vz\n");
