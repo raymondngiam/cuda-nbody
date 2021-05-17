@@ -1,4 +1,5 @@
 #pragma once
+#include <math.h>
 
 #define SOFTENING 1e-9f
 

@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <chrono>
-#include <math.h>
 #include <stdlib.h> 
 #include <fmt/core.h>
 #include <fmt/printf.h>
