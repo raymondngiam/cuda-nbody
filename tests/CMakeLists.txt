@@ -6,7 +6,8 @@ add_executable(${TEST_BINARY}
     Test01_RefactorBodyForce.cu
     Test02_KernelIntegration.cu
     Test03_Prefetch.cu
-    Test04_SharedMemory1D.cu)  
+    Test04_SharedMemory1D.cu
+    Test05_SharedMemory2D.cu)  
 target_link_libraries(${TEST_BINARY} 
     nbody_common
     nbody_gpu
