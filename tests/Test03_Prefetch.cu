@@ -2,10 +2,7 @@
 #include "nbody_common.h"
 #include "nbody_gpu.h"
 #include "test_utils.h"
-#include <math.h>
 #include <chrono>
-#include <string>
-#include <fstream>
 #include <fmt/core.h>
 
 namespace{
