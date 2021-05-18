@@ -82,8 +82,8 @@ float3 bodyForceSM(float3 pos, Body *p, float dt, int n) {
   
   float3 acc = {0.0f, 0.0f, 0.0f};
   
-  for (int i = 0; i < gridDim.x; i++) {
-    auto data = p[i*blockDim.x + threadIdx.x];
+  for (int i = 0; i < gridDim.x/blockDim.y; i++) {
+    auto data = p[(i*blockDim.x*blockDim.y) + (threadIdx.y * blockDim.x) + threadIdx.x];
     sharedPos[threadIdx.x+blockDim.x*threadIdx.y] = data.pos;
     __syncthreads();
 
@@ -123,18 +123,20 @@ void integrateBodySM(Body *p, float dt, int n){
     float3 vel = bodyCurrent.vel;
     
     float3 force = bodyForceSM<multithreadBodies>(pos, p, dt, n);    
-    vel.x += force.x * dt;
-    vel.y += force.y * dt;
-    vel.z += force.z * dt;  
-        
-    // new position = old position + velocity * deltaTime
-    pos.x += vel.x * dt;
-    pos.y += vel.y * dt;
-    pos.z += vel.z * dt;
+    if (threadIdx.y == 0){
+      vel.x += force.x * dt;
+      vel.y += force.y * dt;
+      vel.z += force.z * dt;  
+          
+      // new position = old position + velocity * deltaTime
+      pos.x += vel.x * dt;
+      pos.y += vel.y * dt;
+      pos.z += vel.z * dt;
 
-    // store new position and velocity
-    p[i_id].pos = pos;
-    p[i_id].vel = vel;
+      // store new position and velocity
+      p[i_id].pos = pos;
+      p[i_id].vel = vel;
+    }
   }
 }
 
