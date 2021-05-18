@@ -11,6 +11,7 @@
 namespace{
   const float dt = 0.01f; // time step
   const int nIters = 10;  // simulation iterations
+  constexpr bool multithreadBodies = false;
 } // namespace
 
 void NBody_GPU_V4(int nBodies,int P, int Q, bool verbose){
@@ -40,7 +41,7 @@ void NBody_GPU_V4(int nBodies,int P, int Q, bool verbose){
     dim3 num_of_blocks((nBodies-1)/P + 1,1,1);
     dim3 threads_per_block(P,Q,1);
     size_t shared_mem_size = P * Q * sizeof(float3);
-    integrateBodySM<<<num_of_blocks,threads_per_block, shared_mem_size>>>(p, dt, nBodies);
+    integrateBodySM<multithreadBodies><<<num_of_blocks,threads_per_block, shared_mem_size>>>(p, dt, nBodies);
     errSync = cudaGetLastError();
     if (errSync!=cudaSuccess){printf("Sync error: %s\n",cudaGetErrorString(errSync));}
     errAsync = cudaDeviceSynchronize();
