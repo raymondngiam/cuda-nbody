@@ -64,7 +64,7 @@ void NBody_GPU_V1(int nBodies,bool verbose){
   }
   EXPECT_TRUE(test_utils::AlmostEqual(p,baseline,nBodies,1e-4));
 
-  cudaFree(&p);
+  cudaFree(p);
   free(buf);
 }
 
