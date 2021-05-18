@@ -38,7 +38,7 @@ int main(const int argc, const char** argv) {
   fmt::print("vx,vy,vz:[{:.3f},{:.3f},{:.3f}]\n", vel0.x, vel0.y, vel0.z);
   auto posN = p[nBodies-1].pos;
   auto velN = p[nBodies-1].vel;
-  fmt::print("{}-th body\n",nBodies);
+  fmt::print("{}-th body\n",nBodies-1);
   fmt::print("x,y,z:[{:.3f},{:.3f},{:.3f}]\n", posN.x, posN.y, posN.z);
   fmt::print("vx,vy,vz:[{:.3f},{:.3f},{:.3f}]\n", velN.x, velN.y, velN.z);
 
