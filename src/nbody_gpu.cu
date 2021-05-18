@@ -75,6 +75,7 @@ float3 gravitation(float3 myPos, float3 accel)
     return accel;
 }
 
+template <bool multithreadBodies>
 __device__
 float3 bodyForceSM(float3 pos, Body *p, float dt, int n) {
   extern __shared__ float3 sharedPos[];
@@ -92,9 +93,26 @@ float3 bodyForceSM(float3 pos, Body *p, float dt, int n) {
     
   }
 
+  if (multithreadBodies)
+  {
+      SX_SUM(threadIdx.x, threadIdx.y) = acc;
+
+      __syncthreads();
+
+      // Save the result in global memory for the integration step
+      if (threadIdx.y == 0) {
+          for (int i = 1; i < blockDim.y; i++) {
+              acc.x += SX_SUM(threadIdx.x,i).x;
+              acc.y += SX_SUM(threadIdx.x,i).y;
+              acc.z += SX_SUM(threadIdx.x,i).z;
+          }
+      }
+  }
+
   return acc;
 }
 
+template <bool multithreadBodies>
 __global__
 void integrateBodySM(Body *p, float dt, int n){
   int i_id = blockIdx.x * blockDim.x + threadIdx.x;
@@ -104,7 +122,7 @@ void integrateBodySM(Body *p, float dt, int n){
     float3 pos = bodyCurrent.pos;
     float3 vel = bodyCurrent.vel;
     
-    float3 force = bodyForceSM(pos, p, dt, n);    
+    float3 force = bodyForceSM<multithreadBodies>(pos, p, dt, n);    
     vel.x += force.x * dt;
     vel.y += force.y * dt;
     vel.z += force.z * dt;  
@@ -119,3 +137,8 @@ void integrateBodySM(Body *p, float dt, int n){
     p[i_id].vel = vel;
   }
 }
+
+template __device__ float3 bodyForceSM<false>(float3 pos, Body *p, float dt, int n);
+template __device__ float3 bodyForceSM<true>(float3 pos, Body *p, float dt, int n);
+template __global__ void integrateBodySM<false>(Body *p, float dt, int n);
+template __global__ void integrateBodySM<true>(Body *p, float dt, int n);
