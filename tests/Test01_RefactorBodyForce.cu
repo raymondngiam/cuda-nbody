@@ -19,14 +19,14 @@ void NBody_GPU_V1(int nBodies,bool verbose){
 
   Body *buf = (Body*)malloc(bytes);
 
-  nbody_common::initBodies(buf, nBodies); // Init pos / vel data
+  nbody_common::initBodies(buf, nBodies); // Init pos & vel data
 
   cudaError_t errSync, errAsync;
 
   Body *p;
   cudaMallocManaged((void**)&p, bytes);
   errSync = cudaGetLastError();
-  if (errSync!=cudaSuccess){printf("Malloc error: %s\n",cudaGetErrorString(errSync));}
+  if (errSync!=cudaSuccess){fmt::print("Malloc error: {}\n",cudaGetErrorString(errSync));}
   memcpy(p, buf, bytes);
 
   auto st0 = std::chrono::high_resolution_clock::now();
@@ -35,9 +35,9 @@ void NBody_GPU_V1(int nBodies,bool verbose){
     dim3 threads_per_block(thread_size,1,1);
     bodyForce_v1<<<num_of_blocks,threads_per_block>>>(p, dt, nBodies); // compute interbody forces
     errSync = cudaGetLastError();
-    if (errSync!=cudaSuccess){printf("Sync error: %s\n",cudaGetErrorString(errSync));}
+    if (errSync!=cudaSuccess){fmt::print("Sync error: {}\n",cudaGetErrorString(errSync));}
     errAsync = cudaDeviceSynchronize();
-    if (errAsync!=cudaSuccess){printf("Async error: %s\n",cudaGetErrorString(errAsync));}
+    if (errAsync!=cudaSuccess){fmt::print("Async error: {}\n",cudaGetErrorString(errAsync));}
 
     for (int i = 0 ; i < nBodies; i++) { // integrate position
       p[i].pos.x += p[i].vel.x*dt;

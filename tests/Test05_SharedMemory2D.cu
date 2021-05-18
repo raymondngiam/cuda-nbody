@@ -19,7 +19,7 @@ void NBody_GPU_V5(int nBodies,int P, int Q, bool verbose){
 
   Body *buf = (Body*)malloc(bytes);
 
-  nbody_common::initBodies(buf, nBodies); // Init pos / vel data
+  nbody_common::initBodies(buf, nBodies); // Init pos & vel data
 
   cudaError_t errSync, errAsync;
   int deviceId;
@@ -28,7 +28,7 @@ void NBody_GPU_V5(int nBodies,int P, int Q, bool verbose){
   Body *p;
   cudaMallocManaged((void**)&p, bytes);
   errSync = cudaGetLastError();
-  if (errSync!=cudaSuccess){printf("Malloc error [p]: %s\n",cudaGetErrorString(errSync));}
+  if (errSync!=cudaSuccess){fmt::print("Malloc error: {}\n",cudaGetErrorString(errSync));}
 
   cudaMemPrefetchAsync(p, bytes, deviceId);  // Prefetch to GPU device.
   memcpy(p, buf, bytes);
@@ -40,9 +40,9 @@ void NBody_GPU_V5(int nBodies,int P, int Q, bool verbose){
     size_t shared_mem_size = P * Q * sizeof(float3);
     integrateBodySM<multithreadBodies><<<num_of_blocks,threads_per_block, shared_mem_size>>>(p, dt, nBodies);
     errSync = cudaGetLastError();
-    if (errSync!=cudaSuccess){printf("Sync error: %s\n",cudaGetErrorString(errSync));}
+    if (errSync!=cudaSuccess){fmt::print("Sync error: {}\n",cudaGetErrorString(errSync));}
     errAsync = cudaDeviceSynchronize();
-    if (errAsync!=cudaSuccess){printf("Async error: %s\n",cudaGetErrorString(errAsync));}
+    if (errAsync!=cudaSuccess){fmt::print("Async error: {}\n",cudaGetErrorString(errAsync));}
   }
   auto st1 = std::chrono::high_resolution_clock::now();
   auto elapsed_ms = 1e-6 * (st1-st0).count()/ nIters ;
