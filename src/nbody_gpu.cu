@@ -38,3 +38,84 @@ void integrateBody(Body *p, float dt, int n){
     p[i].pos.z += p[i].vel.z*dt;
   }
 }
+
+__device__ 
+float3 bodyBodyInteraction(float3 ai, float3 bi, float3 bj) {
+    float3 r;
+
+    r.x = bi.x - bj.x;
+    r.y = bi.y - bj.y;
+    r.z = bi.z - bj.z;
+    float distSqr = r.x*r.x + r.y*r.y + r.z*r.z + SOFTENING;
+    float invDist = rsqrtf(distSqr);
+    float invDist3 = invDist * invDist * invDist;      
+
+    ai.x += r.x * invDist3;
+    ai.y += r.y * invDist3;
+    ai.z += r.z * invDist3;
+
+    return ai;
+}
+
+__device__ 
+float3 gravitation(float3 myPos, float3 accel)
+{
+    extern __shared__ float3 sharedPos[];
+    int i;
+
+    for (i = 0; i < blockDim.x; ) 
+    {
+        accel = bodyBodyInteraction(accel, SX(i), myPos); i += 1;
+        // Here we unroll the loop if needed
+        //accel = bodyBodyInteraction(accel, SX(i), myPos); i += 1;
+        //accel = bodyBodyInteraction(accel, SX(i), myPos); i += 1;
+        //accel = bodyBodyInteraction(accel, SX(i), myPos); i += 1;
+    }
+
+    return accel;
+}
+
+__device__
+float3 bodyForceSM(float3 pos, Body *p, float dt, int n) {
+  extern __shared__ float3 sharedPos[];
+  
+  float3 acc = {0.0f, 0.0f, 0.0f};
+  
+  for (int i = 0; i < gridDim.x; i++) {
+    auto data = p[i*blockDim.x + threadIdx.x];
+    sharedPos[threadIdx.x+blockDim.x*threadIdx.y] = data.pos;
+    __syncthreads();
+
+    // This is the "tile_calculation" function from the GPUG3 article.
+    acc = gravitation(pos, acc);
+    __syncthreads();
+    
+  }
+
+  return acc;
+}
+
+__global__
+void integrateBodySM(Body *p, float dt, int n){
+  int i_id = blockIdx.x * blockDim.x + threadIdx.x;
+  
+  if (i_id < n){
+    Body bodyCurrent = p[i_id];   
+    float3 pos = bodyCurrent.pos;
+    float3 vel = bodyCurrent.vel;
+    
+    float3 force = bodyForceSM(pos, p, dt, n);    
+    vel.x += force.x * dt;
+    vel.y += force.y * dt;
+    vel.z += force.z * dt;  
+        
+    // new position = old position + velocity * deltaTime
+    pos.x += vel.x * dt;
+    pos.y += vel.y * dt;
+    pos.z += vel.z * dt;
+
+    // store new position and velocity
+    p[i_id].pos = pos;
+    p[i_id].vel = vel;
+  }
+}
