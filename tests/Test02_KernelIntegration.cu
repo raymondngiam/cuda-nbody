@@ -15,6 +15,7 @@ namespace{
 
 void NBody_GPU_V2(int nBodies,bool verbose){
   int bytes = nBodies * sizeof(Body);
+  int thread_size = 256;
 
   Body *baseline = (Body*)malloc(bytes);
   test_utils::GetBaseline(baseline,nBodies);  
@@ -33,8 +34,8 @@ void NBody_GPU_V2(int nBodies,bool verbose){
 
   auto st0 = std::chrono::high_resolution_clock::now();
   for (int iter = 0; iter < nIters; iter++) {
-    dim3 num_of_blocks(32,1,1);
-    dim3 threads_per_block(256,1,1);
+    dim3 num_of_blocks((nBodies-1)/thread_size + 1,1,1);
+    dim3 threads_per_block(thread_size,1,1);
     bodyForce_v1<<<num_of_blocks,threads_per_block>>>(p, dt, nBodies); // compute interbody forces
     errSync = cudaGetLastError();
     if (errSync!=cudaSuccess){printf("Sync error: %s\n",cudaGetErrorString(errSync));}
