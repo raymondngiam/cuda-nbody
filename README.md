@@ -33,7 +33,7 @@ $ ./cuda_nbody_test
 
 ### Query GPU hardware specification
 
-- Test were conducted using `GeForce GTX 1650 Ti`.
+- Tests were conducted using `GeForce GTX 1650 Ti`.
 - To query the specification of the GPU, execute the following in a terminal:
     ```
     $ ~/NVIDIA_CUDA-11.1_Samples/bin/x86_64/linux/release/deviceQuery
@@ -192,7 +192,7 @@ Note: Google Test filter = Test04_SharedMemory1D._4096BodiesTest
 [  PASSED  ] 1 test.
 ```
 
-### GPU version 5: Shared memory (MultiThreadBodies)
+### GPU version 5: Shared memory (MultiThread)
 
 source: <a href='./tests/Test05_SharedMemory2D.cu'>Test05_SharedMemory2D.cu</a>
 
@@ -213,3 +213,16 @@ Note: Google Test filter = Test05_SharedMemory2D._4096BodiesTest
 [==========] 1 test from 1 test suite ran. (139 ms total)
 [  PASSED  ] 1 test.
 ```
+
+### Results (N-Body Simulation, `N=4096`)
+
+|Configuration|Billion Interactions / Sec|Improvement vs baseline|
+|:-|:-:|:-:|
+|V0-cpu_baseline|0.038|-|
+|V1-RefactorBodyForce|19.007|500x|
+|V2-KernelIntegration|35.673|938x|
+|V3-Prefetch|39.941|1051x|
+|V4-SharedMemory|63.898|1681x|
+|V5-SharedMemoryMultiThread|75.182|1978x|
+
+<img src='./images/performance.png'>
