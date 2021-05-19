@@ -90,7 +90,14 @@ TEST(Test04_SharedMemory1D,_32BodiesTest){
 
 TEST(Test04_SharedMemory1D,_4096BodiesTest){
   const int nBodies = 4096;
+  // optimum P is determined such that 
+  // nBodies / P = n x numOfSMs
+  // in this case, 4096 / 256 = 16 blocks 
+  // GPU under test (GTX1650Ti) has 16 SMs
   int P = 256;
+  // an alternative config for P is
+  // P = 128
+  // whereby, 4096 / 128 = 32 blocks 
   int Q= 1;
   NBody_GPU_V4(nBodies, P, Q, false);
 }
