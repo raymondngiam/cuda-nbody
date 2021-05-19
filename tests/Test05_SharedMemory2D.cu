@@ -90,7 +90,19 @@ TEST(Test05_SharedMemory2D,_32BodiesTest){
 
 TEST(Test05_SharedMemory2D,_4096BodiesTest){
   const int nBodies = 4096;
+  // optimum P is determined such that 
+  // nBodies / P = n x numOfSMs
+  // in this case, 4096 / 256 = 16 blocks 
+  // GPU under test (GTX1650Ti) has 16 SMs
   int P = 256;
+  // an alternative config for P is
+  // P = 128
+  // whereby, 4096 / 128 = 32 blocks 
+
+  // number of Q threads in the y direction
+  // is constrained by 
+  // 'Maximum number of threads per block: 1024'
+  // for P = 256, Q can only be set up to 4
   int Q= 4;
   NBody_GPU_V5(nBodies, P, Q, false);
 }
