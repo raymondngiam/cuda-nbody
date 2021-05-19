@@ -109,6 +109,7 @@ vx,vy,vz:[1.000,1.000,1.000]
 source: <a href='./tests/Test01_RefactorBodyForce.cu'>Test01_RefactorBodyForce.cu</a>
 
 ```
+$ cd <repo_root>/bin
 $ ./cuda_nbody_test --gtest_filter=Test01_RefactorBodyForce._4096BodiesTest
 Running main() from ~/Documents/src/cpp/cuda-nbody/thirdparty/googletest/googletest/src/gtest_main.cc
 Note: Google Test filter = Test01_RefactorBodyForce._4096BodiesTest
@@ -131,6 +132,7 @@ Note: Google Test filter = Test01_RefactorBodyForce._4096BodiesTest
 source: <a href='./tests/Test02_KernelIntegration.cu'>Test02_KernelIntegration.cu</a>
 
 ```
+$ cd <repo_root>/bin
 $ ./cuda_nbody_test --gtest_filter=Test02_KernelIntegration._4096BodiesTest
 Running main() from ~/Documents/src/cpp/cuda-nbody/thirdparty/googletest/googletest/src/gtest_main.cc
 Note: Google Test filter = Test02_KernelIntegration._4096BodiesTest
@@ -153,6 +155,7 @@ Note: Google Test filter = Test02_KernelIntegration._4096BodiesTest
 source: <a href='./tests/Test03_Prefetch.cu'>Test03_Prefetch.cu</a>
 
 ```
+$ cd <repo_root>/bin
 $ ./cuda_nbody_test --gtest_filter=Test03_Prefetch._4096BodiesTest
 Running main() from ~/Documents/src/cpp/cuda-nbody/thirdparty/googletest/googletest/src/gtest_main.cc
 Note: Google Test filter = Test03_Prefetch._4096BodiesTest
@@ -175,6 +178,7 @@ Note: Google Test filter = Test03_Prefetch._4096BodiesTest
 source: <a href='./tests/Test04_SharedMemory1D.cu'>Test04_SharedMemory1D.cu</a>
 
 ```
+$ cd <repo_root>/bin
 $ ./cuda_nbody_test --gtest_filter=Test04_SharedMemory1D._4096BodiesTest
 Running main() from ~/Documents/src/cpp/cuda-nbody/thirdparty/googletest/googletest/src/gtest_main.cc
 Note: Google Test filter = Test04_SharedMemory1D._4096BodiesTest
@@ -197,6 +201,7 @@ Note: Google Test filter = Test04_SharedMemory1D._4096BodiesTest
 source: <a href='./tests/Test05_SharedMemory2D.cu'>Test05_SharedMemory2D.cu</a>
 
 ```
+$ cd <repo_root>/bin
 $ ./cuda_nbody_test --gtest_filter=Test05_SharedMemory2D._4096BodiesTest
 Running main() from /home/ray/Documents/src/cpp/cuda-nbody/thirdparty/googletest/googletest/src/gtest_main.cc
 Note: Google Test filter = Test05_SharedMemory2D._4096BodiesTest
